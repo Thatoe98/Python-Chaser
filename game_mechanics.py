@@ -7,6 +7,19 @@ from ui_elements import draw_snake, display_message, toggle_music
 from pathfinding import find_path_to_food
 from game_screens import show_preparation_screen
 
+def draw_grid(surface, grid_size):
+    """Draw a grid on the game surface to help with navigation"""
+    # Grid color - light gray that won't distract players
+    grid_color = (50, 50, 50)
+    
+    # Draw vertical lines
+    for x in range(0, WIDTH, grid_size):
+        pygame.draw.line(surface, grid_color, (x, 0), (x, HEIGHT), 1)
+    
+    # Draw horizontal lines
+    for y in range(0, HEIGHT, grid_size):
+        pygame.draw.line(surface, grid_color, (0, y), (WIDTH, y), 1)
+
 def game_loop(game_mode, game_duration):
     """Main game loop separated as a function to allow restarting"""
     is_bot_game = (game_mode == "PVE")
@@ -14,9 +27,9 @@ def game_loop(game_mode, game_duration):
     # Show preparation screen
     show_preparation_screen(is_bot_game)
 
-    # Player 1 (Red Snake)
-    snake1_pos = [100, 50]
-    snake1_body = [[100, 50], [80, 50]]  # Start with 2 blocks
+    # Player 1 (Red Snake) - Simple half-size offset to center in grid
+    snake1_pos = [100, 50 + SNAKE_SIZE // 2]
+    snake1_body = [[100, snake1_pos[1]], [80, snake1_pos[1]]]  # Start with 2 blocks
     snake1_direction = 'RIGHT'
     snake1_change = [SNAKE_SIZE, 0]
     snake1_score = 0
@@ -26,9 +39,9 @@ def game_loop(game_mode, game_duration):
     snake1_frozen = False
     snake1_frozen_start_time = None
 
-    # Player 2 (Blue Snake) / Bot
-    snake2_pos = [700, 550]
-    snake2_body = [[700, 550], [720, 550]]  # Start with 2 blocks
+    # Player 2 (Blue Snake) / Bot - Simple half-size offset to center in grid
+    snake2_pos = [700, 550 + SNAKE_SIZE // 2]
+    snake2_body = [[700, snake2_pos[1]], [720, snake2_pos[1]]]  # Start with 2 blocks
     snake2_direction = 'LEFT'
     snake2_change = [-SNAKE_SIZE, 0]
     snake2_score = 0
@@ -257,6 +270,9 @@ def game_loop(game_mode, game_duration):
 
         # Draw food
         pygame.draw.rect(screen, GREEN, [food_pos[0], food_pos[1], SNAKE_SIZE, SNAKE_SIZE])
+
+        # Draw grid before other elements (using snake size as grid size)
+        draw_grid(screen, SNAKE_SIZE)
 
         # Draw snakes with original rectangle-based heads
         draw_snake(snake1_body, RED)
